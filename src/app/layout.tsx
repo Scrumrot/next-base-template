@@ -4,6 +4,9 @@ import { type Metadata } from "next";
 import { Geist, Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { TRPCReactProvider } from "@/trpc/react";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Navbar } from "@/components/navbar";
+import { getThemeScript, getServerTheme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -19,16 +22,35 @@ const geist = Geist({
   variable: "--font-geist-sans",
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const theme = await getServerTheme();
+
   return (
-    <html lang="en" className={cn(geist.variable, inter.variable)}>
+    <html
+      lang="en"
+      className={cn(geist.variable, inter.variable, theme)}
+      style={{ colorScheme: theme }}
+    >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{ __html: getThemeScript() }}
+        />
+      </head>
       <body>
-        <TRPCReactProvider>
-          <main>{children}</main>
-          <Toaster />
-        </TRPCReactProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme={theme}
+          enableSystem
+          disableTransitionOnChange
+        >
+          <TRPCReactProvider>
+            <Navbar />
+            <main>{children}</main>
+            <Toaster />
+          </TRPCReactProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

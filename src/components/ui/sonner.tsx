@@ -38,7 +38,14 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }
       toastOptions={{
         classNames: {
-          toast: "cn-toast",
+          toast: "group border shadow-lg rounded-md",
+          success: "!bg-emerald-50 !border-emerald-200 !text-emerald-900 dark:!bg-emerald-950 dark:!border-emerald-800 dark:!text-emerald-100 [&_svg]:!text-emerald-600 dark:[&_svg]:!text-emerald-400",
+          error: "!bg-red-50 !border-red-200 !text-red-900 dark:!bg-red-950 dark:!border-red-800 dark:!text-red-100 [&_svg]:!text-red-600 dark:[&_svg]:!text-red-400",
+          warning: "!bg-amber-50 !border-amber-200 !text-amber-900 dark:!bg-amber-950 dark:!border-amber-800 dark:!text-amber-100 [&_svg]:!text-amber-600 dark:[&_svg]:!text-amber-400",
+          info: "!bg-blue-50 !border-blue-200 !text-blue-900 dark:!bg-blue-950 dark:!border-blue-800 dark:!text-blue-100 [&_svg]:!text-blue-600 dark:[&_svg]:!text-blue-400",
+          description: "!text-current opacity-80",
+          actionButton: "!bg-primary !text-primary-foreground hover:!bg-primary/90",
+          cancelButton: "!bg-muted !text-muted-foreground hover:!bg-muted/90",
         },
       }}
       {...props}

@@ -1,6 +1,7 @@
 "use client"
 import * as React from "react"
 import { CalendarIcon } from "lucide-react"
+import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
@@ -10,6 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+
 function formatDate(date: Date | undefined) {
   if (!date) {
     return ""
@@ -20,36 +22,64 @@ function formatDate(date: Date | undefined) {
     year: "numeric",
   })
 }
+
 function isValidDate(date: Date | undefined) {
   if (!date) {
     return false
   }
   return !isNaN(date.getTime())
 }
-export function DatePicker() {
+
+type DatePickerProps = Readonly<{
+  date?: Date;
+  onDateChange?: (date: Date | undefined) => void;
+  placeholder?: string;
+  label?: string;
+  className?: string;
+}>;
+
+export function DatePicker({
+  date: controlledDate,
+  onDateChange,
+  placeholder = "Select date",
+  label,
+  className,
+}: DatePickerProps) {
   const [open, setOpen] = React.useState(false)
-  const [date, setDate] = React.useState<Date | undefined>(
-    new Date("2025-06-01")
+  const [internalDate, setInternalDate] = React.useState<Date | undefined>(
+    controlledDate ?? new Date()
   )
+
+  const date = controlledDate !== undefined ? controlledDate : internalDate
+  const setDate = onDateChange ?? setInternalDate
+
   const [month, setMonth] = React.useState<Date | undefined>(date)
   const [value, setValue] = React.useState(formatDate(date))
+
+  React.useEffect(() => {
+    setValue(formatDate(date))
+    if (date) setMonth(date)
+  }, [date])
+
   return (
-    <div className="flex flex-col gap-3">
-      <Label htmlFor="date" className="px-1">
-        Subscription Date
-      </Label>
+    <div className={cn("flex flex-col gap-2", className)}>
+      {label && (
+        <Label htmlFor="date" className="px-1">
+          {label}
+        </Label>
+      )}
       <div className="relative flex gap-2">
         <Input
           id="date"
           value={value}
-          placeholder="June 01, 2025"
+          placeholder={placeholder}
           className="bg-background pr-10"
           onChange={(e) => {
-            const date = new Date(e.target.value)
+            const newDate = new Date(e.target.value)
             setValue(e.target.value)
-            if (isValidDate(date)) {
-              setDate(date)
-              setMonth(date)
+            if (isValidDate(newDate)) {
+              setDate(newDate)
+              setMonth(newDate)
             }
           }}
           onKeyDown={(e) => {
@@ -82,9 +112,9 @@ export function DatePicker() {
               captionLayout="dropdown"
               month={month}
               onMonthChange={setMonth}
-              onSelect={(date) => {
-                setDate(date)
-                setValue(formatDate(date))
+              onSelect={(selectedDate) => {
+                setDate(selectedDate)
+                setValue(formatDate(selectedDate))
                 setOpen(false)
               }}
             />
